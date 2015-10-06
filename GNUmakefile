@@ -192,7 +192,6 @@ vbox: vmdk
 	VBoxManage storagectl jos --name "IDE Controller" --add ide
 	VBoxManage storageattach jos --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium $(OBJDIR)/kern/kernel.vmdk --mtype immutable
 #	VBoxManage modifyvm jos --uart1 0x3f8 4 --uartmode1 file /tmp/vbox.log
-	VBoxManage startvm jos
 
 # For deleting the build
 clean:

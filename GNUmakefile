@@ -140,12 +140,15 @@ include lib/Makefrag
 include user/Makefrag
 
 
+CPUS ?= 1
+
 QEMUOPTS = -M q35 -serial mon:stdio -gdb tcp::$(GDBPORT)
 QEMUOPTS += $(shell if $(QEMU) -nographic -help | grep -q '^-D '; then echo '-D qemu.log'; fi)
 # Use a legacy IDE controller for the kernel
 QEMUOPTS += -drive file=$(OBJDIR)/kern/kernel.img,format=raw,if=none,id=kernel \
 	    -device piix4-ide,id=piix4-ide -device ide-hd,drive=kernel,bus=piix4-ide.0
 IMAGES = $(OBJDIR)/kern/kernel.img
+QEMUOPTS += -smp $(CPUS)
 QEMUOPTS += $(QEMUEXTRA)
 
 .gdbinit: .gdbinit.tmpl
@@ -193,6 +196,7 @@ vbox: vmdk
 	VBoxManage createvm -name jos --ostype "Other" --register
 	VBoxManage storagectl jos --name "IDE Controller" --add ide
 	VBoxManage storageattach jos --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium $(OBJDIR)/kern/kernel.vmdk --mtype immutable
+	VBoxManage modifyvm jos --ioapic on --hpet on --cpus 8
 #	VBoxManage modifyvm jos --uart1 0x3f8 4 --uartmode1 file /tmp/vbox.log
 
 # For deleting the build

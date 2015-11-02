@@ -372,6 +372,8 @@ kbd_intr(void)
 static void
 kbd_init(void)
 {
+	// Drain the kbd buffer so that QEMU generates interrupts.
+	kbd_intr();
 }
 
 

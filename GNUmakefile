@@ -138,6 +138,7 @@ include boot/Makefrag
 include kern/Makefrag
 include lib/Makefrag
 include user/Makefrag
+include fs/Makefrag
 
 
 CPUS ?= 1
@@ -149,6 +150,10 @@ QEMUOPTS += -drive file=$(OBJDIR)/kern/kernel.img,format=raw,if=none,id=kernel \
 	    -device piix4-ide,id=piix4-ide -device ide-hd,drive=kernel,bus=piix4-ide.0
 IMAGES = $(OBJDIR)/kern/kernel.img
 QEMUOPTS += -smp $(CPUS)
+# Use the builtin SATA controller for the file system
+QEMUOPTS += -drive file=$(OBJDIR)/fs/fs.img,format=raw,if=none,id=fs \
+	    -device ide-hd,drive=fs,bus=ide.0
+IMAGES += $(OBJDIR)/fs/fs.img
 QEMUOPTS += $(QEMUEXTRA)
 
 .gdbinit: .gdbinit.tmpl
@@ -197,6 +202,8 @@ vbox: vmdk
 	VBoxManage storagectl jos --name "IDE Controller" --add ide
 	VBoxManage storageattach jos --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium $(OBJDIR)/kern/kernel.vmdk --mtype immutable
 	VBoxManage modifyvm jos --ioapic on --hpet on --cpus 8
+	VBoxManage storagectl jos --name "SATA Controller" --add sata
+	VBoxManage storageattach jos --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium $(OBJDIR)/fs/fs.vmdk --mtype immutable
 #	VBoxManage modifyvm jos --uart1 0x3f8 4 --uartmode1 file /tmp/vbox.log
 
 # For deleting the build

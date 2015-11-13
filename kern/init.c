@@ -16,6 +16,7 @@
 #include <kern/sched.h>
 #include <kern/cpu.h>
 #include <kern/spinlock.h>
+#include <kern/pci.h>
 
 static void boot_aps(void);
 
@@ -65,19 +66,28 @@ i386_init(uint32_t magic, uint32_t addr)
 	ioapic_enable(IRQ_KBD, bootcpu->cpu_apicid);
 	ioapic_enable(IRQ_SERIAL, bootcpu->cpu_apicid);
 
+	// Lab 5 hardware initialization functions
+	pci_init();
+
 	// Acquire the big kernel lock before waking up APs
 	// Your code here:
 
 	// Starting non-boot CPUs
 	boot_aps();
 
+	// Start fs.
+	ENV_CREATE(fs_fs, ENV_TYPE_FS);
+
 #if defined(TEST)
 	// Don't touch -- used by grading script!
 	ENV_CREATE(TEST, ENV_TYPE_USER);
 #else
 	// Touch all you want.
-	ENV_CREATE(user_primes, ENV_TYPE_USER);
+	ENV_CREATE(user_icode, ENV_TYPE_USER);
 #endif // TEST*
+
+	// Should not be necessary - drains keyboard because interrupt has given up.
+	kbd_intr();
 
 	// Schedule and run the first user environment!
 	sched_yield();

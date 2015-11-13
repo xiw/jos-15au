@@ -42,6 +42,8 @@ KERN_SRCFILES +=	kern/mpentry.S \
 			kern/spinlock.c \
 			kern/time.c
 
+KERN_SRCFILES +=	kern/pci.c
+
 # Only build files if they exist.
 KERN_SRCFILES := $(wildcard $(KERN_SRCFILES))
 
@@ -81,6 +83,22 @@ KERN_BINFILES +=	user/idle \
 			user/pingpong \
 			user/pingpongs \
 			user/primes
+# Binary files for LAB5
+KERN_BINFILES +=	user/testfile \
+			user/spawnhello \
+			user/icode \
+			fs/fs
+
+# Binary files for LAB5
+KERN_BINFILES +=	user/testpteshare \
+			user/testfdsharing \
+			user/testpipe \
+			user/testpiperace \
+			user/testpiperace2 \
+			user/primespipe \
+			user/testkbd \
+			user/testshell
+
 KERN_OBJFILES := $(patsubst %.c, $(OBJDIR)/%.o, $(KERN_SRCFILES))
 KERN_OBJFILES := $(patsubst %.S, $(OBJDIR)/%.o, $(KERN_OBJFILES))
 KERN_OBJFILES := $(patsubst $(OBJDIR)/lib/%, $(OBJDIR)/kern/%, $(KERN_OBJFILES))

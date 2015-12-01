@@ -127,6 +127,10 @@
 // Top of normal user stack
 #define USTACKTOP	(UTOP - 2*PGSIZE)
 
+// Used for user-mode drivers
+#define UMMIOBASE	0xE0000000
+#define UMMIOAHCI	UMMIOBASE
+
 // Where user programs generally begin
 #define UTEXT		(2*PTSIZE)
 

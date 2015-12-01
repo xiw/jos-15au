@@ -135,7 +135,7 @@ ahci_port_rw(volatile struct ahci_port *port, uint64_t secno, void *buf, uint16_
 void
 ahci_init(void)
 {
-	uintptr_t addr;
+	void *addr = (void *)UMMIOAHCI;
 	int i;
 
 	static_assert(sizeof(struct ata_identify_device) == 0x200);
@@ -145,15 +145,10 @@ ahci_init(void)
 	static_assert(sizeof(struct ahci_cmd_header) == 0x20);
 	static_assert(sizeof(struct ahci_port_page) <= PGSIZE);
 
-	// Search for the AHCI registers in MMIO
-	for (addr = MMIOBASE; addr < MMIOLIM; addr += PGSIZE) {
-		if (va_is_mapped((void *)addr)) {
-			regs = (volatile struct ahci_memory *)addr;
-			break;
-		}
-	}
-	if (!regs)
-		panic("AHCI not found in MMIO space");
+	// AHCI registers
+	if (!va_is_mapped(addr))
+		panic("AHCI not mapped");
+	regs = addr;
 
 	// Enable AHCI
 	regs->ghc |= AHCI_GHC_AE;

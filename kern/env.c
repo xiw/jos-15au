@@ -355,7 +355,15 @@ env_create(uint8_t *binary, enum EnvType type)
 	// LAB 3: Your code here.
 
 	// If this is the file server (type == ENV_TYPE_FS),
-	// give it access to the AHCI's MMIO page (ahci_va).
+	// give it access to the AHCI registers; in particular,
+	// map the page [UMMIOAHCI, UMMIOAHCI+PGSIZE) to the
+	// physical addresses [ahci_va, ahci_va+PGSIZE) maps to,
+	// and make it user-accessible.
+	//
+	// Hints:
+	//   - The staff solution uses pgdir_walk.
+	//   - Think carefully about the permissions.
+	//
 	// LAB 5: Your code here.
 }
 
